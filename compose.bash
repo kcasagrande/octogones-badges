@@ -10,6 +10,14 @@ usage () {
 	exit 1
 }
 
+trace () {
+	${quiet} || echo -n "${1}..." >&2
+	shift 1
+	eval $*
+	result=$?
+	${quiet} || if [ ${result:-1} -eq 0 ]; then echo " OK." >&2 ; else echo " failed\!" >&2 ; fi
+}
+
 parsedArguments=$(getopt -n ${0} -o t:o:fq --long template:,output-directory:,force,quiet -- "${@}")
 validArguments=$?
 if [ \! ${validArguments} ]; then
@@ -50,14 +58,6 @@ template=${argTemplate:?${usageMessage}}
 outputDirectory=${argOutputDirectory:?${usageMessage}}
 force=${argForce:-false}
 quiet=${argQuiet:-false}
-
-trace () {
-	${quiet} || echo -n "${1}..." >&2
-	shift 1
-	eval $*
-	result=$?
-	${quiet} || if [ ${result:-1} -eq 0 ]; then echo " OK." >&2 ; else echo " failed\!" >&2 ; fi
-}
 
 compose () {
 	source="${1}"
